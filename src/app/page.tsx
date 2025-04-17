@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import VerticalTabs from '@/components/VerticalTabs';
 import ImageCarousel from '@/components/ImageCarousel';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
 import { sectionVariants } from '@/lib/constants';
 import Cards from '@/components/Cards';
 import Image from 'next/image';
@@ -22,7 +21,7 @@ export default function Home() {
   // This is the main component for the home page
   return (
     <>
-    
+
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -30,12 +29,12 @@ export default function Home() {
         className="text-center py-8 px-4 sm:py-10"
       >
         <Image
-            src="/images/meprofile.jpg"
-            alt="Martijn van Halen"
-            width={164}
-            height={164}
-            className="rounded-xl object-contain object-center mx-auto"
-          />
+          src="/images/meprofile.jpg"
+          alt="Martijn van Halen"
+          width={164}
+          height={164}
+          className="rounded-xl object-contain object-center mx-auto"
+        />
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mt-8">Martijn van Halen</h1>
         <p className="text-base sm:text-lg md:text-xl mt-2">Seasoned Full-Stack Engineer & Technical Founder in Fintech, Mobile Apps, Cloud, and Crypto/Web3</p>
       </motion.div>
@@ -63,7 +62,7 @@ export default function Home() {
       >
         <h2 className="text-xl sm:text-2xl font-bold mb-4">Get in Touch</h2>
         <p className="text-sm sm:text-base mb-6">
-          I'm available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO. 
+          I&apos;m available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO.
           Interested in collaborating or discussing a project or role? Reach out!
         </p>
         <div className="flex justify-center mb-4 gap-4">
@@ -74,7 +73,7 @@ export default function Home() {
             <a href="https://www.linkedin.com/in/mvanhalen">LinkedIn</a>
           </Button>
         </div>
-      
+
       </motion.section>
       <motion.section
         variants={sectionVariants}
@@ -86,7 +85,7 @@ export default function Home() {
         <h2 className="text-xl sm:text-2xl font-bold mb-4">Experience</h2>
         <VerticalTabs />
       </motion.section>
-      
+
       <Cards />
 
       <motion.section
@@ -119,7 +118,7 @@ export default function Home() {
       >
         <h2 className="text-xl sm:text-2xl font-bold mb-4">Get in Touch</h2>
         <p className="text-sm sm:text-base mb-6">
-          I'm available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO. 
+          I&apos;m available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO.
           Interested in collaborating or discussing a project or role? Reach out!
         </p>
         <div className="flex justify-center mb-4 gap-4">
@@ -130,7 +129,7 @@ export default function Home() {
             <a href="https://www.linkedin.com/in/mvanhalen">LinkedIn</a>
           </Button>
         </div>
-      
+
       </motion.section>
     </>
   );

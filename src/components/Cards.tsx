@@ -22,7 +22,7 @@ export default function Cards() {
             content: (
               <>
                 <p className="text-sm sm:text-base mb-2">
-                 Building <strong>iOS</strong> and <strong>Android</strong> apps using{" "}
+                  Building <strong>iOS</strong> and <strong>Android</strong> apps using{" "}
                   <strong>Flutter</strong>.
                 </p>
                 <ul className="list-disc pl-5 text-sm sm:text-base">
