@@ -1,103 +1,137 @@
-import Image from "next/image";
+"use client";
+import { motion } from 'framer-motion';
+import VerticalTabs from '@/components/VerticalTabs';
+import ImageCarousel from '@/components/ImageCarousel';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader } from '@/components/ui/card';
+import { sectionVariants } from '@/lib/constants';
+import Cards from '@/components/Cards';
+import Image from 'next/image';
+
+const skills = [
+  'JavaScript / TypeScript', 'Svelte', 'React', 'C#', 'Dart (Flutter)', 'Go', 'SQL', 'GraphQL', 'Solidity',
+  'SvelteKit', 'Angular', 'Vue', 'Next.js', 'Bootstrap', 'Flutter',
+  'Azure', 'Google Cloud', 'Cloudflare', 'Vercel', 'BigQuery', 'GitHub', 'Docker', 'Redis', 'RabbitMQ',
+  'ETH scaffold', 'Hardhat', 'Chai', 'DeSo', 'Ethereum', 'Polygon', 'Web3', 'SocialFi', 'Lens Protocol',
+  'WalletConnect', 'Alchemy', 'Infura'
+];
+
+
 
 export default function Home() {
+  // This is the main component for the home page
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <>
+    
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center py-8 px-4 sm:py-10"
+      >
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+            src="/images/meprofile.jpg"
+            alt="Martijn van Halen"
+            width={164}
+            height={164}
+            className="rounded-xl object-contain object-center mx-auto"
+          />
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mt-8">Martijn van Halen</h1>
+        <p className="text-base sm:text-lg md:text-xl mt-2">Seasoned Full-Stack Engineer & Technical Founder in Fintech, Mobile Apps, Cloud, and Crypto/Web3</p>
+      </motion.div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <ImageCarousel />
+
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-8 px-4 sm:py-10 max-w-3xl mx-auto"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Summary</h2>
+        <p className="text-sm sm:text-base">
+          I am a full-stack engineer and technical founder with over 20 years of experience in fintech, mobile apps, cloud computing, and crypto/Web3. I have built products and services from the ground up, creating viable businesses that scaled to acquisitions (e.g., Payvision, sold for $200M) and startups that secured venture capital ($500K). My expertise spans developing minimum viable products, achieving product-market fit, and driving growth to millions of users, subscriptions, and transactions.
+        </p>
+      </motion.section>
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-8 px-4 sm:py-10 max-w-3xl mx-auto text-center"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Get in Touch</h2>
+        <p className="text-sm sm:text-base mb-6">
+          I'm available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO. 
+          Interested in collaborating or discussing a project or role? Reach out!
+        </p>
+        <div className="flex justify-center mb-4 gap-4">
+          <Button asChild>
+            <a href="mailto:martijn.vanhalen@gmail.com">Contact Me</a>
+          </Button>
+          <Button asChild>
+            <a href="https://www.linkedin.com/in/mvanhalen">LinkedIn</a>
+          </Button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      
+      </motion.section>
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-8 px-4 sm:py-10 max-w-3xl mx-auto"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Experience</h2>
+        <VerticalTabs />
+      </motion.section>
+      
+      <Cards />
+
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-8 px-4 sm:py-10 max-w-4xl mx-auto"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Skills and Technologies</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {skills.map((skill) => (
+            <motion.div
+              key={skill}
+              whileHover={{ scale: 1.05 }}
+              className="p-2 bg-gray-100 dark:bg-gray-800 rounded text-center text-sm sm:text-base"
+            >
+              {skill}
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-8 px-4 sm:py-10 max-w-3xl mx-auto text-center"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Get in Touch</h2>
+        <p className="text-sm sm:text-base mb-6">
+          I'm available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO. 
+          Interested in collaborating or discussing a project or role? Reach out!
+        </p>
+        <div className="flex justify-center mb-4 gap-4">
+          <Button asChild>
+            <a href="mailto:martijn.vanhalen@gmail.com">Contact Me</a>
+          </Button>
+          <Button asChild>
+            <a href="https://www.linkedin.com/in/mvanhalen">LinkedIn</a>
+          </Button>
+        </div>
+      
+      </motion.section>
+    </>
   );
 }
