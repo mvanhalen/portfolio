@@ -123,7 +123,7 @@ export default function OpenAiChat() {
   return (
     <>
       <Button
-        className="fixed-button"
+        className="fixed-button z-50"
         onClick={() => setOpen(true)}
       >
         <MessageSquare className="w-12 h-12" />

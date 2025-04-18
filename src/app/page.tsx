@@ -25,7 +25,7 @@ export default function Home() {
     // The main container for the page
     <div className="max-w-4xl mx-auto relative">
 
-      <div className="flex justify-end mb-4 pt-8 gap-4">
+      <div className="flex justify-end mb-4 pt-8 gap-4 mr-4">
         <Button  variant="ghost">
           <Link href="/pdf/Martijn van Halen CV 2025 public.pdf" target="_blank" download>
             <Download className="h-5 w-5" />
