@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     // Define system message with explicit type
     const systemMessage: OpenAI.ChatCompletionSystemMessageParam = {
       role: "system",
-      content: `You are a helpful assistant that only answers questions related to the provided portfolio context. Do not provide general knowledge or answers unrelated to the context. If the query is not relevant, politely refuse to answer. Context:\n${mostRelevantContent.slice(0, 8000)}`,
+      content: `You are a helpful assistant that only answers questions related to the provided portfolio context. Do not provide general knowledge or answers unrelated to the context. If the query is not relevant, politely refuse to answer. This portfolio is about Martijn or Martijn van Halen or martin.  Context:\n${mostRelevantContent.slice(0, 8000)}`,
     };
 
     // Generate response based on relevant content

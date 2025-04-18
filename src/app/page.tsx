@@ -49,7 +49,7 @@ export default function Home() {
       >
         <h2 className="text-xl sm:text-2xl font-bold mb-4">Summary</h2>
         <p className="text-sm sm:text-base">
-          I am a full-stack engineer and technical founder with over 20 years of experience in fintech, mobile apps, cloud computing, and crypto/Web3. I have built products and services from the ground up, creating viable businesses that scaled to acquisitions (e.g., Payvision, sold for $200M) and startups that secured venture capital ($500K). My expertise spans developing minimum viable products, achieving product-market fit, and driving growth to millions of users, subscriptions, and transactions.
+          I am a full-stack engineer and technical founder with over 20 years of experience in fintech, mobile apps, cloud computing, and crypto/Web3. I have built products and services from the ground up, creating viable businesses that scaled to acquisitions (e.g., Payvision, sold for $200M) and startups that secured venture capital ($500K). My expertise spans developing minimum viable products, achieving product-market fit, and driving growth to millions of users, subscriptions, and transactions. Never failed a project.
         </p>
       </motion.section>
       <motion.section
