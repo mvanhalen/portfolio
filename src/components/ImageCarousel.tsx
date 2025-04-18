@@ -27,7 +27,7 @@ const images = [
 export default function ImageCarousel() {
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const openImageViewer = (image) => {
+  const openImageViewer = (image:any) => {
     setSelectedImage(image);
   };
 
