@@ -60,10 +60,11 @@ export default function Cards() {
                 </p>
                 <ul className="list-disc pl-5 text-sm sm:text-base">
                   <li>
-                    Created <strong>AI rooms</strong> service with <strong>Next.js</strong>
+                    Created <strong>AI powered chatbot </strong> for this site
                   </li>
                   <li>Integrated <strong>OpenAI embeddings</strong></li>
-                  <li><strong>Coding</strong>with Co Pilot, Grok and OpenAI </li>
+                  <li>Working on RoomsAI <strong>Multi tenant AI powered chat rooms</strong></li>
+                  <li><strong>Coding</strong> with Co Pilot, Grok and OpenAI </li>
                 </ul>
               </>
             ),
@@ -74,12 +75,13 @@ export default function Cards() {
             content: (
               <>
                 <p className="text-sm sm:text-base mb-2">
-                  Skilled in <strong>DevOps</strong> with <strong>GitHub</strong> and <strong>Docker</strong>.
+                  Skilled in <strong>DevOps</strong> with <strong>Azure</strong>, <strong>GitHub</strong> and <strong>Docker</strong>.
                 </p>
                 <ul className="list-disc pl-5 text-sm sm:text-base">
                   <li>Implemented <strong>Docker</strong> for microservices</li>
                   <li>Used <strong>RabbitMQ</strong> for queuing</li>
-                  <li>Set up <strong>GitHub Actions</strong></li>
+                  <li>Used <strong>Redis Cache</strong> and cron jobs for caching</li>
+                  <li>Set up <strong>GitHub Actions</strong> for flows</li>
                 </ul>
               </>
             ),

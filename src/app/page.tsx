@@ -133,13 +133,11 @@ export default function Home() {
         </div>
 
         <div className='text-center text-xs sm:text-sm mb-10 mt-8'>
-          This portfolio is built with Next.js / React, TypeScript, Tailwind CSS + ShadCN, and Framer Motion. It is hosted on Vercel. The code is open source and available on 
+          This portfolio is built with Next.js / React, TypeScript, Tailwind CSS + ShadCN, and Framer Motion. The chat is powered by OpenAI api and custom embeddings. It is hosted on Vercel. The code is open source and available on 
           <Link href="https://github.com/mvanhalen/portfolio" target="_blank" className="text-blue-500 hover:underline"> GitHub</Link>.
         </div>
       </motion.section>
       <OpenAIChat />
-
     </div>
-  
   );
 }
