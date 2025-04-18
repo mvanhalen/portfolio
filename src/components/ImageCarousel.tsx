@@ -9,12 +9,18 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
+
+interface ImageType {
+  src: string;
+  alt: string;
+}
+
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const images = [
+const images:ImageType[] = [
   { src: "/images/nftz-home.png", alt: "NFTz home" },
   { src: "/images/nftz-user.png", alt: "NFTz profile" },
   { src: "/images/intersocial.png", alt: "InterSocial home" },
@@ -25,9 +31,9 @@ const images = [
 ];
 
 export default function ImageCarousel() {
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
 
-  const openImageViewer = (image:any) => {
+  const openImageViewer = (image:ImageType) => {
     setSelectedImage(image);
   };
 
