@@ -29,6 +29,7 @@ export default function Cards() {
                   <li>Developed <strong>InterSocial</strong> mobile app</li>
                   <li>Created mobile app generator for <strong>iGenApps</strong></li>
                   <li>Implemented mobile first <strong>PWAs</strong></li>
+                  <li>Setup a native preview app <strong>CI pipeline</strong></li>
                 </ul>
               </>
             ),

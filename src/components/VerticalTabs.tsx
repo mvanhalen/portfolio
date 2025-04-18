@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Currency, Cloud, CreditCard } from "lucide-react";
+import Link from "next/link";
 
 interface Tab {
   id: string;
@@ -10,6 +11,10 @@ interface Tab {
   icon: React.ReactNode; // Lucide icon component
   image: string; // Path to image for tab content
   content: React.ReactNode;
+  buttonText: string;
+  buttonLink: string;
+  buttonTextExtra: string | null;
+  buttonLinkExtra: string | null;
 }
 
 const tabs: Tab[] = [
@@ -25,14 +30,20 @@ const tabs: Tab[] = [
           CTO, Full Stack Developer, Co-founder - Dec 2021 - Present
         </p>
         <ul className="list-disc pl-5 mt-2 text-sm sm:text-base">
-          <li>Responsible for all technical aspects of the platform</li>
+          <li>Responsible for all technical aspects and development</li>
           <li>Raised $500K and additional community funds</li>
           <li>Developed social NFT marketplaces (nftz.me, orna.art)</li>
           <li>Created InterSocial mobile app for iOS and Android</li>
           <li>Set up data flows and smart contracts on Polygon</li>
+          <li>Created scalable audio spaces for web and mobile</li>
+          <li>Added advanced staking and monetization features</li>
         </ul>
       </div>
     ),
+    buttonText: "View NFTz",
+    buttonLink: "https://nftz.me",
+    buttonLinkExtra:"https://intersocial.xyz/getapp",
+    buttonTextExtra: "View InterSocial",
   },
   {
     id: "saas",
@@ -49,10 +60,15 @@ const tabs: Tab[] = [
           <li>Set up backend and mobile app generator from scratch</li>
           <li>Scaled to millions of registered users</li>
           <li>Integrated subscription flows with Apple, Google, Stripe</li>
-          <li>Developed instant mobile app PWAs and native previews</li>
+          <li>Developed instant mobile app PWAs</li>
+          <li>Setup native app flow preview for iOS and Android</li>
         </ul>
       </div>
     ),
+    buttonText: "View iGenApps",
+    buttonLink: "https://igenapps.com",
+    buttonLinkExtra:null,
+    buttonTextExtra: null,
   },
   {
     id: "fintech",
@@ -70,9 +86,14 @@ const tabs: Tab[] = [
           <li>Built a 10-person tech team and opened a Madrid office</li>
           <li>Scaled to a successful fintech business, sold for $200M</li>
           <li>Developed payment processing solutions</li>
+          <li>Guided Payvision through 2 PCI DSS audits</li>
         </ul>
       </div>
     ),
+    buttonText: "ING Press Release",
+    buttonLink: "https://www.ing.com/Newsroom/News/Press-releases/ING-completes-acquisition-of-majority-stake-in-Payvision.htm",
+    buttonLinkExtra:null,
+    buttonTextExtra: null,
   },
 ];
 
@@ -105,7 +126,18 @@ export default function Tabs() {
           />
         </div>
         <div className="sm:w-2/3">{tabs.find((tab) => tab.id === activeTab)?.content}</div>
+               
       </div>
+      <div className="flex flex-col mt-4 gap-4">
+      <Button asChild >
+        <Link target="_blank" href={tabs.find((tab) => tab.id === activeTab)?.buttonLink}> {tabs.find((tab) => tab.id === activeTab)?.buttonText}</Link>  
+      </Button>
+      {tabs.find((tab) => tab.id === activeTab)?.buttonLinkExtra && <Button asChild> 
+        <Link target="_blank" href={tabs.find((tab) => tab.id === activeTab)?.buttonLinkExtra}> {tabs.find((tab) => tab.id === activeTab)?.buttonTextExtra}</Link>  
+        
+        </Button>}
+      </div>
+
     </div>
   );
 }
