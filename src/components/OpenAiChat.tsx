@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Lock, MessageSquare } from "lucide-react";
+import { Lock, MessageSquare, Send, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChatMessage {
@@ -68,7 +68,7 @@ export default function OpenAiChat() {
   return (
     <>
       <Button
-        className="fixed bottom-4 right-4 rounded-full w-24 h-24 shadow-lg flex flex-col"
+        className="fixed bottom-4 right-4 rounded-full w-24 h-24 shadow-lg flex flex-col items-center justify-center"
         onClick={() => setOpen(true)}
       >
         <MessageSquare className="w-12 h-12" />
@@ -78,59 +78,77 @@ export default function OpenAiChat() {
         <SheetTrigger asChild>
           <span className="hidden">Open Chat</span>
         </SheetTrigger>
-        <SheetContent side="right" className="w-full sm:w-[400px] p-4">
-          <div className="flex flex-col h-full">
-            <h2 className="text-lg font-semibold mb-4">Portfolio Chat</h2>
-            <ScrollArea className="flex-grow mb-4">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`mb-2 ${
-                    msg.role === "user" ? "text-right" : "text-left"
+        <SheetContent side="right" className="w-full sm:w-[400px] p-4 flex flex-col h-full">
+          <h2 className="text-lg font-semibold mb-4">Portfolio Chat</h2>
+          <ScrollArea className="flex-grow mb-4">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-2 ${
+                  msg.role === "user" ? "text-right" : "text-left"
+                }`}
+              >
+                <span
+                  className={`inline-block p-2 rounded-lg ${
+                    msg.role === "user"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 dark:bg-gray-700"
                   }`}
                 >
-                  <span
-                    className={`inline-block p-2 rounded-lg ${
-                      msg.role === "user"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 dark:bg-gray-700"
-                    }`}
-                  >
-                    {msg.content}
-                  </span>
-                </div>
-              ))}
-            </ScrollArea>
+                  {msg.content}
+                </span>
+              </div>
+            ))}
+          </ScrollArea>
+          <div className="mt-auto flex flex-col gap-2">
             <div className="flex gap-2">
-              <Input
+              <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about my portfolio, cv and me..."
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                rows={2}
+                className="resize-none"
                 disabled={isLoading}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
               />
-              <Button onClick={handleSend} disabled={isLoading}>
-                {isLoading ? "Sending..." : "Send"}
+              <Button
+                onClick={handleSend}
+                disabled={isLoading}
+                className="h-[72px] flex items-center justify-center" // Match Textarea height
+              >
+                {isLoading ? (
+                  "Sending..."
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
               </Button>
             </div>
-            <Button
-              variant="outline"
-              className="mt-2"
-              onClick={() => {
-                setMessages([]);
-                localStorage.removeItem("chatHistory");
-              }}
-            >
-              Clear Chat
-            </Button>
-            <Button
-              variant="outline"
-              className="mt-2 flex items-center gap-2"
-              onClick={() => window.location.href = "/admin"}
-            >
-              <Lock className="w-4 h-4" />
-              Update Embeddings
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 flex items-center gap-2"
+                onClick={() => {
+                  setMessages([]);
+                  localStorage.removeItem("chatHistory");
+                }}
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear Chat
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 flex items-center gap-2"
+                onClick={() => (window.location.href = "/admin")}
+              >
+                <Lock className="w-4 h-4" />
+                Update Embeddings
+              </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
