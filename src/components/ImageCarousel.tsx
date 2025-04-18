@@ -47,7 +47,7 @@ export default function ImageCarousel() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      className="py-8 px-4 sm:py-10"
+      className="py-4 px-4 sm:py-10"
     >
       <Swiper
         modules={[Navigation, Pagination]}
