@@ -135,10 +135,10 @@ export default function OpenAiChat() {
         </SheetTrigger>
         <SheetContent side="right" className="w-full sm:w-[400px] p-0 flex flex-col h-full">
           <VisuallyHidden asChild>
-            <DialogTitle>Martijn's Portfolio Chat</DialogTitle>
+            <DialogTitle>Martijn&apos;s Portfolio Chat</DialogTitle>
           </VisuallyHidden>
           <div className="sticky top-0 bg-white dark:bg-gray-800 z-20 flex items-center justify-between px-4 py-3 border-b">
-            <h2 className="text-lg font-semibold">Martijn's Portfolio Chat</h2>
+            <h2 className="text-lg font-semibold">Martijn&apos;s Portfolio Chat</h2>
             <SheetClose asChild>
               <Button variant="ghost" size="icon" aria-label="Close chat">
                 <X className="w-6 h-6" />
