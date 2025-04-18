@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { sectionVariants } from '@/lib/constants';
 import Cards from '@/components/Cards';
 import Image from 'next/image';
+import OpenAIChat from '@/components/OpenAiChat';
 
 const skills = [
   'JavaScript / TypeScript', 'Svelte', 'React', 'C#', 'Dart (Flutter)', 'Go', 'SQL', 'GraphQL', 'Solidity',
@@ -14,8 +15,6 @@ const skills = [
   'ETH scaffold', 'Hardhat', 'Chai', 'DeSo', 'Ethereum', 'Polygon', 'Web3', 'SocialFi', 'Lens Protocol',
   'WalletConnect', 'Alchemy', 'Infura'
 ];
-
-
 
 export default function Home() {
   // This is the main component for the home page
@@ -131,6 +130,7 @@ export default function Home() {
         </div>
 
       </motion.section>
+      <OpenAIChat />
     </>
   );
 }
