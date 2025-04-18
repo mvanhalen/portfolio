@@ -1,8 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 import { list } from "@vercel/blob";
 
+// Define the Embedding interface to replace `any`
+interface Embedding {
+  content: string;
+  embedding: number[];
+  type: "cv" | "url";
+  source?: string;
+}
+
+// Initialize OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const BLOB_PATH = "embeddings.json";
 
@@ -22,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     // Read embeddings from Blob
-    let embeddings: any[] = [];
+    let embeddings: Embedding[] = [];
     try {
       const { blobs } = await list({ prefix: BLOB_PATH });
       const blob = blobs.find((b) => b.pathname === BLOB_PATH);
@@ -73,17 +81,18 @@ export async function POST(request: Request) {
       });
     }
 
-    // Generate response based on relevant content
-    const systemMessage = {
+    // Define system message with explicit type
+    const systemMessage: OpenAI.ChatCompletionSystemMessageParam = {
       role: "system",
       content: `You are a helpful assistant that only answers questions related to the provided portfolio context. Do not provide general knowledge or answers unrelated to the context. If the query is not relevant, politely refuse to answer. Context:\n${mostRelevantContent.slice(0, 8000)}`,
     };
 
+    // Generate response based on relevant content
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         systemMessage,
-        { role: "user", content: query },
+        { role: "user", content: query } as OpenAI.ChatCompletionUserMessageParam,
       ],
       max_tokens: 150,
     });
