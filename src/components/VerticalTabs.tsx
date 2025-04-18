@@ -129,11 +129,11 @@ export default function Tabs() {
                
       </div>
       <div className="flex flex-col mt-4 gap-4">
-      <Button asChild >
-        <Link target="_blank" href={tabs.find((tab) => tab.id === activeTab)?.buttonLink}> {tabs.find((tab) => tab.id === activeTab)?.buttonText}</Link>  
-      </Button>
+      {tabs.find((tab) => tab.id === activeTab)?.buttonLink &&<Button asChild >
+        <Link target="_blank" href={tabs.find((tab) => tab.id === activeTab)!.buttonLink}> {tabs.find((tab) => tab.id === activeTab)?.buttonText}</Link>  
+      </Button>}
       {tabs.find((tab) => tab.id === activeTab)?.buttonLinkExtra && <Button asChild> 
-        <Link target="_blank" href={tabs.find((tab) => tab.id === activeTab)?.buttonLinkExtra}> {tabs.find((tab) => tab.id === activeTab)?.buttonTextExtra}</Link>  
+        <Link target="_blank" href={tabs.find((tab) => tab.id === activeTab)!.buttonLinkExtra!}> {tabs.find((tab) => tab.id === activeTab)?.buttonTextExtra}</Link>  
         
         </Button>}
       </div>
