@@ -120,3 +120,41 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.fixed-button {
+  cursor: pointer;
+  position: fixed;
+  bottom: 1rem; /* bottom-4 */
+  right: calc((100% - 56rem) / 2); /* Centers relative to max-w-4xl */
+  border-radius: 9999px; /* rounded-full */
+  width: 6rem; /* w-24 */
+  height: 6rem; /* h-24 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* shadow-lg */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 56rem) {
+  .fixed-button {
+    right: 1rem; /* right-4 for mobile */
+  }
+}
+
+.prose {
+ font-style: normal;
+}
+.prose h1, .prose h2, .prose h3 {
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+.prose ul {
+  list-style: disc;
+  padding-left: 1.5em;
+}
+.prose a {
+  color: blue;
+  text-decoration: underline;
+}

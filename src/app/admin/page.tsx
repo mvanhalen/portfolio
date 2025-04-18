@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
 
 export default function AdminPanel() {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cvText, setCvText] = useState("");
@@ -55,6 +57,9 @@ export default function AdminPanel() {
   if (!isAuthenticated) {
     return (
       <div className="max-w-md mx-auto mt-8 p-4 border rounded-lg">
+        <Button variant="outline" onClick={() => router.back()} className="mb-4">
+          Back
+        </Button>
         <h2 className="text-xl font-semibold mb-4">Admin Login</h2>
         <Input
           type="password"
@@ -71,6 +76,9 @@ export default function AdminPanel() {
 
   return (
     <div className="max-w-md mx-auto mt-8 p-4 border rounded-lg">
+      <Button onClick={() => router.back()} className="mb-4">
+        Back
+      </Button>
       <h2 className="text-xl font-semibold mb-4">Manage Embeddings</h2>
       <Textarea
         value={cvText}

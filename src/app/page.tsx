@@ -7,6 +7,7 @@ import { sectionVariants } from '@/lib/constants';
 import Cards from '@/components/Cards';
 import Image from 'next/image';
 import OpenAIChat from '@/components/OpenAiChat';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const skills = [
   'JavaScript / TypeScript', 'Svelte', 'React', 'C#', 'Dart (Flutter)', 'Go', 'SQL', 'GraphQL', 'Solidity',
@@ -19,7 +20,12 @@ const skills = [
 export default function Home() {
   // This is the main component for the home page
   return (
-    <>
+    // The main container for the page
+    <div className="max-w-4xl mx-auto relative">
+
+      <div className="flex justify-end mb-4 pt-8">
+        <ThemeToggle/>
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: -50 }}
@@ -27,6 +33,7 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="text-center py-8 px-4 sm:py-10"
       >
+       
         <Image
           src="/images/meprofile.jpg"
           alt="Martijn van Halen"
@@ -39,7 +46,7 @@ export default function Home() {
       </motion.div>
 
       <ImageCarousel />
-
+      
       <motion.section
         variants={sectionVariants}
         initial="hidden"
@@ -131,6 +138,7 @@ export default function Home() {
 
       </motion.section>
       <OpenAIChat />
-    </>
+    </div>
+  
   );
 }

@@ -84,7 +84,7 @@ const tabs: Tab[] = [
         <ul className="list-disc pl-5 mt-2 text-sm sm:text-base">
           <li>Set up technical services from scratch</li>
           <li>Built a 10-person tech team and opened a Madrid office</li>
-          <li>Scaled to a successful fintech business, sold for $200M</li>
+          <li>Scaled to a successful fintech business, sold for $200M+ to ING Bank</li>
           <li>Developed payment processing solutions</li>
           <li>Guided Payvision through 2 PCI DSS audits</li>
         </ul>

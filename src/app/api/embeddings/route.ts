@@ -8,6 +8,25 @@ import axios from "axios";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const BLOB_PATH = "embeddings.json";
 
+// Define the Embedding interface
+interface Embedding {
+  content: string;
+  embedding: number[];
+  type: "cv" | "url";
+  parentType: "cv" | "url"; // Tracks original content type
+  chunkIndex: number; // Tracks chunk position
+  source?: string; // URL source for url type
+}
+
+// Chunk content into smaller pieces
+function chunkContent(content: string, chunkSize: number = 500): string[] {
+  const chunks: string[] = [];
+  for (let i = 0; i < content.length; i += chunkSize) {
+    chunks.push(content.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
 export async function GET() {
   try {
     // List blobs to find embeddings.json
@@ -42,7 +61,7 @@ export async function POST(request: Request) {
     const { cvText, urls } = await request.json();
 
     // Read existing embeddings from Blob
-    let existingEmbeddings: any[] = [];
+    let existingEmbeddings: Embedding[] = [];
     try {
       const { blobs } = await list({ prefix: BLOB_PATH });
       const blob = blobs.find((b) => b.pathname === BLOB_PATH);
@@ -61,36 +80,48 @@ export async function POST(request: Request) {
       }
     } catch {}
 
-    // Process CV text
-    const newEmbeddings: any[] = [];
+    // Process CV text as chunks
+    const newEmbeddings: Embedding[] = [];
     if (cvText) {
-      const embedding = await openai.embeddings.create({
-        model: "text-embedding-ada-002",
-        input: cvText,
-      });
-      newEmbeddings.push({
-        content: cvText,
-        embedding: embedding.data[0].embedding,
-        type: "cv",
-      });
+      const chunks = chunkContent(cvText, 500);
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        const embedding = await openai.embeddings.create({
+          model: "text-embedding-ada-002",
+          input: chunk,
+        });
+        newEmbeddings.push({
+          content: chunk,
+          embedding: embedding.data[0].embedding,
+          type: "cv",
+          parentType: "cv",
+          chunkIndex: i,
+        });
+      }
     }
 
-    // Process URLs
+    // Process URLs as chunks
     for (const url of urls || []) {
       try {
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
         const text = $("body").text().replace(/\s+/g, " ").trim();
-        const embedding = await openai.embeddings.create({
-          model: "text-embedding-ada-002",
-          input: text.slice(0, 8000),
-        });
-        newEmbeddings.push({
-          content: text.slice(0, 8000),
-          embedding: embedding.data[0].embedding,
-          type: "url",
-          source: url,
-        });
+        const chunks = chunkContent(text.slice(0, 8000), 500);
+        for (let i = 0; i < chunks.length; i++) {
+          const chunk = chunks[i];
+          const embedding = await openai.embeddings.create({
+            model: "text-embedding-ada-002",
+            input: chunk,
+          });
+          newEmbeddings.push({
+            content: chunk,
+            embedding: embedding.data[0].embedding,
+            type: "url",
+            parentType: "url",
+            chunkIndex: i,
+            source: url,
+          });
+        }
       } catch (error) {
         console.error(`Failed to crawl ${url}:`, error);
       }
@@ -100,7 +131,7 @@ export async function POST(request: Request) {
     const updatedEmbeddings = [...existingEmbeddings, ...newEmbeddings];
     await put(BLOB_PATH, JSON.stringify(updatedEmbeddings, null, 2), {
       access: "public",
-      allowOverwrite: true
+      allowOverwrite: true,
     });
 
     return NextResponse.json({ success: true });

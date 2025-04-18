@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 import { list } from "@vercel/blob";
 
-// Define the Embedding interface to replace `any`
 interface Embedding {
   content: string;
   embedding: number[];
@@ -10,11 +10,9 @@ interface Embedding {
   source?: string;
 }
 
-// Initialize OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const BLOB_PATH = "embeddings.json";
 
-// Compute cosine similarity
 function cosineSimilarity(vecA: number[], vecB: number[]): number {
   const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
   const normA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
@@ -36,14 +34,15 @@ export async function POST(request: Request) {
       const blob = blobs.find((b) => b.pathname === BLOB_PATH);
 
       if (blob) {
+        const token = process.env.BLOB_READ_WRITE_TOKEN;
+        if (!token) throw new Error("BLOB_READ_WRITE_TOKEN is not set");
+
         const response = await fetch(blob.url, {
-          headers: {
-            Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch blob content");
+          throw new Error(`Failed to fetch blob content: ${response.statusText}`);
         }
 
         const data = await response.text();
@@ -51,7 +50,7 @@ export async function POST(request: Request) {
       }
     } catch {
       return NextResponse.json({
-        message: "No portfolio data available. Please ask about my portfolio later.",
+        message: "**No portfolio data available.** Please ask about my portfolio later.",
       });
     }
 
@@ -62,32 +61,58 @@ export async function POST(request: Request) {
     });
     const queryEmbedding = queryEmbeddingResponse.data[0].embedding;
 
-    // Find the most relevant embedding
-    let maxSimilarity = -1;
-    let mostRelevantContent = "";
-    for (const embedding of embeddings) {
-      const similarity = cosineSimilarity(queryEmbedding, embedding.embedding);
-      if (similarity > maxSimilarity) {
-        maxSimilarity = similarity;
-        mostRelevantContent = embedding.content;
+    // Pre-filter embeddings by keywords
+    const queryKeywords = query.toLowerCase().split(/\s+/).filter((word) => word.length > 3);
+    const filteredEmbeddings = embeddings.filter((embedding) =>
+      queryKeywords.some((keyword) =>
+        embedding.content.toLowerCase().includes(keyword)
+      )
+    );
+
+    // Compute similarities for filtered embeddings (or all if none match)
+    const targetEmbeddings = filteredEmbeddings.length ? filteredEmbeddings : embeddings;
+    const similarities = targetEmbeddings.map((embedding) =>
+      cosineSimilarity(queryEmbedding, embedding.embedding)
+    );
+
+    // Dynamic threshold (top 25th percentile or fallback)
+    const sortedSimilarities = similarities.slice().sort((a, b) => b - a);
+    const dynamicThreshold = sortedSimilarities[Math.floor(sortedSimilarities.length * 0.25)] || 0.75;
+
+    // Find top 3 relevant embeddings
+    const relevantEmbeddings: { content: string; similarity: number }[] = [];
+    for (let i = 0; i < targetEmbeddings.length; i++) {
+      const similarity = similarities[i];
+      if (similarity >= dynamicThreshold) {
+        relevantEmbeddings.push({ content: targetEmbeddings[i].content, similarity });
       }
     }
+    relevantEmbeddings.sort((a, b) => b.similarity - a.similarity);
+    const topRelevantContent = relevantEmbeddings
+      .slice(0, 3)
+      .map((e) => e.content)
+      .join("\n\n")
+      .slice(0, 8000);
 
-    // Relevance threshold
-    const relevanceThreshold = 0.75;
-    if (maxSimilarity < relevanceThreshold) {
+    // Check if any relevant content was found
+    if (!topRelevantContent) {
       return NextResponse.json({
-        message: "I'm here to help with portfolio-related questions! Please ask about my experience, projects, or skills.",
+        message: "**I'm here to help with portfolio-related questions!** Please ask about my experience, projects, or skills.",
       });
     }
 
-    // Define system message with explicit type
+    // Define system message with markdown instruction
     const systemMessage: OpenAI.ChatCompletionSystemMessageParam = {
       role: "system",
-      content: `You are a helpful assistant that only answers questions related to the provided portfolio context. Do not provide general knowledge or answers unrelated to the context. If the query is not relevant, politely refuse to answer. This portfolio is about Martijn or Martijn van Halen or martin.  Context:\n${mostRelevantContent.slice(0, 8000)}`,
+      content: `You are Martijn's portfolio assistant, designed to showcase the professional expertise and achievements of Martijn, Martijn van Halen, or Martin. Answer only questions directly related to the provided portfolio context, which includes public information such as Martijn's CV, project details, and professional bio. Share only this public portfolio-related information, avoiding any sensitive or unrelated personal details. Do not provide general knowledge or answers outside the context, even if the query seems tangentially related. If the query is irrelevant or the context is insufficient, politely refuse to answer with a brief markdown-formatted message. Format all responses in markdown for clarity, using:
+      - **Headings** (##) for main topics or questions.
+      - **Lists** (-) for multiple items or points.
+      - **Bold** (**) for emphasis (e.g., roles, key terms).
+      - **Links** ([text](url)) for URLs mentioned in the context.
+      Keep responses concise, under 150 tokens, prioritizing key details. If the query is ambiguous, ask for clarification within the portfolio context. Context (Martijn's portfolio):\n${topRelevantContent}`,  
     };
 
-    // Generate response based on relevant content
+    // Generate response
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -101,6 +126,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ message });
   } catch (error) {
     console.error("Chat error:", error);
-    return NextResponse.json({ error: "Failed to process chat" }, { status: 500 });
+    return NextResponse.json({
+      message: "**Error:** Failed to process your request. Please try again later.",
+    }, { status: 500 });
   }
 }
