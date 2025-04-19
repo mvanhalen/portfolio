@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
-import { getCachedEmbeddings } from "@/lib/cache";
+import { getCachedEmbeddings, loadEmbeddings } from "@/lib/cache";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 
 function cosineSimilarity(vecA: number[], vecB: number[]): number {
   const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
@@ -19,12 +20,19 @@ export async function POST(request: Request) {
     }
 
     // Load embeddings from cache
-    const embeddings = getCachedEmbeddings() || [];
+    let embeddings = getCachedEmbeddings();
     if (!embeddings.length) {
-      return NextResponse.json({
-        message: "**No portfolio data available.** Please ask about Martijn's experience, projects, or skills later.",
-      });
+      console.log("Cache empty, attempting to reload embeddings...");
+      embeddings = await loadEmbeddings();
+      if (!embeddings.length) {
+        console.warn("No embeddings available after reload");
+        return NextResponse.json({
+          message: "**No portfolio data available.** Please ask about Martijn's experience, projects, or skills later.",
+        });
+      }
     }
+
+    console.log("Using embeddings, count:", embeddings.length);
 
     // Generate embedding for the query
     const queryEmbeddingResponse = await openai.embeddings.create({
@@ -108,7 +116,7 @@ Keep responses concise, under 150 tokens. Context:\n${topRelevantContent}`,
         systemMessage,
         { role: "user", content: query } as OpenAI.ChatCompletionUserMessageParam,
       ],
-      max_tokens: 150,
+      max_tokens: 500,
     });
 
     let message = completion.choices[0].message.content;
