@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 import { put, list } from "@vercel/blob";
@@ -8,14 +7,16 @@ import axios from "axios";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const BLOB_PATH = "embeddings.json";
 
-// Define the Embedding interface
+// In-memory cache for embeddings (shared with chat route)
+export let cachedEmbeddings: Embedding[] | null = null;
+
 interface Embedding {
   content: string;
   embedding: number[];
   type: "cv" | "url";
-  parentType: "cv" | "url"; // Tracks original content type
-  chunkIndex: number; // Tracks chunk position
-  source?: string; // URL source for url type
+  parentType: "cv" | "url";
+  chunkIndex: number;
+  source?: string;
 }
 
 // Chunk content into smaller pieces
@@ -29,6 +30,11 @@ function chunkContent(content: string, chunkSize: number = 500): string[] {
 
 export async function GET() {
   try {
+    // Return cached embeddings if available
+    if (cachedEmbeddings) {
+      return NextResponse.json(cachedEmbeddings);
+    }
+
     // List blobs to find embeddings.json
     const { blobs } = await list({ prefix: BLOB_PATH });
     const blob = blobs.find((b) => b.pathname === BLOB_PATH);
@@ -49,7 +55,8 @@ export async function GET() {
     }
 
     const data = await response.text();
-    return NextResponse.json(JSON.parse(data));
+    cachedEmbeddings = JSON.parse(data);
+    return NextResponse.json(cachedEmbeddings);
   } catch (error) {
     console.error("Blob read error:", error);
     return NextResponse.json({ error: "Failed to read embeddings" }, { status: 500 });
@@ -133,6 +140,9 @@ export async function POST(request: Request) {
       access: "public",
       allowOverwrite: true,
     });
+
+    // Update cache
+    cachedEmbeddings = updatedEmbeddings;
 
     return NextResponse.json({ success: true });
   } catch (error) {

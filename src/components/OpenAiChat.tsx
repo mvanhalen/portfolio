@@ -56,7 +56,6 @@ export default function OpenAiChat() {
           scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
         }
       } else if (attempt < 3) {
-        // Retry up to 3 times
         console.warn(`Refs not available, retrying attempt ${attempt + 1}`);
         setTimeout(() => scrollToBottom(attempt + 1), 100);
       } else {
@@ -64,7 +63,6 @@ export default function OpenAiChat() {
       }
     };
 
-    // Delay to ensure DOM updates
     const timer = setTimeout(() => scrollToBottom(), 300);
     return () => clearTimeout(timer);
   }, [messages, open]);
@@ -104,9 +102,17 @@ export default function OpenAiChat() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Chat API error");
 
+      // Sanitize and limit response length
+      let message = data.message || "";
+      if (typeof message === "string") {
+        message = message.slice(0, 1000); // Limit to 1000 characters
+      } else {
+        message = "**Error:** Invalid response format.";
+      }
+
       const assistantMessage: ChatMessage = {
         role: "assistant",
-        content: data.message,
+        content: message,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
@@ -123,7 +129,7 @@ export default function OpenAiChat() {
   return (
     <>
       <Button
-        className="fixed-button z-50"
+        className="fixed-button"
         onClick={() => setOpen(true)}
       >
         <MessageSquare className="w-12 h-12" />
@@ -135,10 +141,10 @@ export default function OpenAiChat() {
         </SheetTrigger>
         <SheetContent side="right" className="w-full sm:w-[400px] p-0 flex flex-col h-full">
           <VisuallyHidden asChild>
-            <DialogTitle>Martijn&apos;s Portfolio Chat</DialogTitle>
+            <DialogTitle>Portfolio Chat</DialogTitle>
           </VisuallyHidden>
           <div className="sticky top-0 bg-white dark:bg-gray-800 z-20 flex items-center justify-between px-4 py-3 border-b">
-            <h2 className="text-lg font-semibold">Martijn&apos;s Portfolio Chat</h2>
+            <h2 className="text-lg font-semibold">Portfolio Chat</h2>
             <SheetClose asChild>
               <Button variant="ghost" size="icon" aria-label="Close chat">
                 <X className="w-6 h-6" />
@@ -160,7 +166,7 @@ export default function OpenAiChat() {
                         msg.role === "user"
                           ? "bg-blue-500 text-white"
                           : "bg-gray-200 dark:bg-gray-700"
-                      }`}
+                      } max-w-[90%]`}
                     >
                       {msg.role === "user" ? (
                         msg.content
