@@ -1,96 +1,14 @@
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
-import { list } from "@vercel/blob";
+import { getCachedEmbeddings } from "@/lib/cache";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const BLOB_PATH = "embeddings.json";
-
-// In-memory cache for embeddings
-let cachedEmbeddings: Embedding[] | null = null;
-
-interface Embedding {
-  content: string;
-  embedding: number[];
-  type: "cv" | "url";
-  parentType?: "cv" | "url";
-  chunkIndex?: number;
-  source?: string;
-}
-
-// Preload embeddings when module is loaded
-async function preloadEmbeddings() {
-  try {
-    console.log("Preloading embeddings from Vercel Blob...");
-    const { blobs } = await list({ prefix: BLOB_PATH });
-    const blob = blobs.find((b) => b.pathname === BLOB_PATH);
-
-    if (!blob) {
-      console.warn("No embeddings blob found during preload");
-      cachedEmbeddings = [];
-      return;
-    }
-
-    const response = await fetch(blob.url, {
-      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch blob content: ${response.statusText}`);
-    }
-
-    const data = await response.text();
-    cachedEmbeddings = JSON.parse(data);
-    console.log("Embeddings preloaded successfully");
-  } catch (error) {
-    console.error("Preload embeddings error:", error);
-    cachedEmbeddings = [];
-  }
-}
-
-// Execute preload immediately
-preloadEmbeddings().catch((error) => {
-  console.error("Failed to preload embeddings:", error);
-});
 
 function cosineSimilarity(vecA: number[], vecB: number[]): number {
   const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
   const normA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
   const normB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
   return dotProduct / (normA * normB);
-}
-
-// Load embeddings from cache or Vercel Blob
-async function loadEmbeddings(): Promise<Embedding[]> {
-  try {
-    if (cachedEmbeddings !== null) {
-      console.log("Using cached embeddings");
-      return cachedEmbeddings;
-    }
-
-    console.log("Fetching embeddings from Vercel Blob...");
-    const { blobs } = await list({ prefix: BLOB_PATH });
-    const blob = blobs.find((b) => b.pathname === BLOB_PATH);
-
-    if (!blob) {
-      console.warn("No embeddings blob found");
-      return [];
-    }
-
-    const response = await fetch(blob.url, {
-      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch blob content: ${response.statusText}`);
-    }
-
-    const data = await response.text();
-    cachedEmbeddings = JSON.parse(data);
-    return cachedEmbeddings || [];
-  } catch (error) {
-    console.error("Load embeddings error:", error);
-    return [];
-  }
 }
 
 export async function POST(request: Request) {
@@ -100,8 +18,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid query" }, { status: 400 });
     }
 
-    // Load embeddings
-    const embeddings = await loadEmbeddings();
+    // Load embeddings from cache
+    const embeddings = getCachedEmbeddings() || [];
     if (!embeddings.length) {
       return NextResponse.json({
         message: "**No portfolio data available.** Please ask about Martijn's experience, projects, or skills later.",
@@ -115,7 +33,7 @@ export async function POST(request: Request) {
     });
     const queryEmbedding = queryEmbeddingResponse.data[0].embedding;
 
-    // Relaxed keyword pre-filtering (lower length threshold)
+    // Relaxed keyword pre-filtering
     const queryKeywords = query.toLowerCase().split(/\s+/).filter((word) => word.length > 2);
     const filteredEmbeddings = embeddings.filter((embedding) =>
       queryKeywords.some((keyword) =>
@@ -129,14 +47,14 @@ export async function POST(request: Request) {
       cosineSimilarity(queryEmbedding, embedding.embedding)
     );
 
-    // Relaxed dynamic threshold (top 50th percentile, minimum 0.7)
+    // Relaxed dynamic threshold (50th percentile, minimum 0.7)
     const sortedSimilarities = similarities.slice().sort((a, b) => b - a);
     const dynamicThreshold = Math.max(
       sortedSimilarities[Math.floor(sortedSimilarities.length * 0.5)] || 0.7,
       0.7
     );
 
-    // Find relevant embeddings, grouping by source/parentType
+    // Find relevant embeddings
     const relevantEmbeddings: { content: string; similarity: number; source?: string; chunkIndex?: number }[] = [];
     for (let i = 0; i < targetEmbeddings.length; i++) {
       const similarity = similarities[i];
@@ -150,7 +68,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Sort by similarity, then chunkIndex for continuity
+    // Sort by similarity, then chunkIndex
     relevantEmbeddings.sort((a, b) => {
       if (a.source === b.source) {
         return (a.chunkIndex || 0) - (b.chunkIndex || 0);
@@ -158,14 +76,14 @@ export async function POST(request: Request) {
       return b.similarity - a.similarity;
     });
 
-    // Combine top 3 embeddings, respecting chunk order
+    // Combine top 3 embeddings
     const topRelevantContent = relevantEmbeddings
       .slice(0, 3)
       .map((e) => e.content)
       .join("\n\n")
       .slice(0, 8000);
 
-    // Check if any relevant content was found
+    // Check for relevant content
     if (!topRelevantContent) {
       return NextResponse.json({
         message: "**Please ask a specific question about Martijn's portfolio.** For example, ask about his experience, projects, or skills.",
@@ -190,14 +108,14 @@ Keep responses concise, under 150 tokens. Context:\n${topRelevantContent}`,
         systemMessage,
         { role: "user", content: query } as OpenAI.ChatCompletionUserMessageParam,
       ],
-      max_tokens: 500,
+      max_tokens: 150,
     });
 
     let message = completion.choices[0].message.content;
-    // Ensure fallback response is used if OpenAI returns a vague message
+    // Override vague OpenAI responses
     if (
-      message!.toLowerCase().includes("need more context") ||
-      message!.toLowerCase().includes("more information")
+      message?.toLowerCase().includes("need more context") ||
+      message?.toLowerCase().includes("more information")
     ) {
       message = "**Please ask a specific question about Martijn's portfolio.** For example, ask about his experience, projects, or skills.";
     }

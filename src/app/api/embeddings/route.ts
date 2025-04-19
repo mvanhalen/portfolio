@@ -3,21 +3,11 @@ import { OpenAI } from "openai";
 import { put, list } from "@vercel/blob";
 import * as cheerio from "cheerio";
 import axios from "axios";
+import { Embedding, getCachedEmbeddings, setCachedEmbeddings } from "@/lib/cache";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const BLOB_PATH = "embeddings.json";
 
-// In-memory cache for embeddings (shared with chat route)
-export let cachedEmbeddings: Embedding[] | null = null;
-
-interface Embedding {
-  content: string;
-  embedding: number[];
-  type: "cv" | "url";
-  parentType: "cv" | "url";
-  chunkIndex: number;
-  source?: string;
-}
 
 // Chunk content into smaller pieces
 function chunkContent(content: string, chunkSize: number = 500): string[] {
@@ -31,32 +21,8 @@ function chunkContent(content: string, chunkSize: number = 500): string[] {
 export async function GET() {
   try {
     // Return cached embeddings if available
-    if (cachedEmbeddings) {
-      return NextResponse.json(cachedEmbeddings);
-    }
-
-    // List blobs to find embeddings.json
-    const { blobs } = await list({ prefix: BLOB_PATH });
-    const blob = blobs.find((b) => b.pathname === BLOB_PATH);
-
-    if (!blob) {
-      return NextResponse.json([]);
-    }
-
-    // Fetch blob content
-    const response = await fetch(blob.url, {
-      headers: {
-        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch blob content");
-    }
-
-    const data = await response.text();
-    cachedEmbeddings = JSON.parse(data);
-    return NextResponse.json(cachedEmbeddings);
+    const embeddings = getCachedEmbeddings() || [];
+    return NextResponse.json(embeddings);
   } catch (error) {
     console.error("Blob read error:", error);
     return NextResponse.json({ error: "Failed to read embeddings" }, { status: 500 });
@@ -142,7 +108,8 @@ export async function POST(request: Request) {
     });
 
     // Update cache
-    cachedEmbeddings = updatedEmbeddings;
+    setCachedEmbeddings(updatedEmbeddings);
+    console.log("Cache updated with new embeddings");
 
     return NextResponse.json({ success: true });
   } catch (error) {
