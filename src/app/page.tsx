@@ -12,11 +12,11 @@ import Link from 'next/link';
 import { Download, Mail, Share } from 'lucide-react';
 
 const skills = [
-  'JavaScript / TypeScript', 'Svelte', 'React', 'C#', 'Dart (Flutter)', 'Go', 'SQL', 'GraphQL', 'Solidity',
+  'JavaScript / TypeScript', 'Svelte', 'React', 'C#', 'Dart', 'Go', 'SQL', 'GraphQL', 'Solidity',
   'SvelteKit', 'Angular', 'Vue', 'Next.js', 'Bootstrap', 'Flutter',
   'Azure', 'Google Cloud', 'Cloudflare', 'Vercel', 'BigQuery', 'GitHub', 'Docker', 'Redis', 'RabbitMQ',
   'ETH scaffold', 'Hardhat', 'Chai', 'DeSo', 'Ethereum', 'Polygon', 'Web3', 'SocialFi', 'Lens Protocol',
-  'WalletConnect', 'Alchemy', 'Infura'
+  'WalletConnect', 'Alchemy', 'Infura','Stripe','PayPal','Three.js','Viem'
 ];
 
 export default function Home() {
@@ -89,7 +89,27 @@ export default function Home() {
       </motion.section>
 
       <Cards />
-
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-8 px-4 sm:py-10 max-w-3xl mx-auto text-center"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Get in Touch</h2>
+        <p className="text-sm sm:text-base mb-6">
+          I&apos;m available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO.
+          Interested in collaborating or discussing a project or role? Reach out!
+        </p>
+        <div className="flex justify-center mb-4 gap-4">
+          <Button asChild>
+            <a href="mailto:martijn.vanhalen@gmail.com">Contact Me</a>
+          </Button>
+          <Button asChild>
+            <a href="https://www.linkedin.com/in/mvanhalen">LinkedIn</a>
+          </Button>
+        </div>
+        </motion.section>
       <motion.section
         variants={sectionVariants}
         initial="hidden"
@@ -118,19 +138,7 @@ export default function Home() {
         viewport={{ once: true }}
         className="py-8 px-4 sm:py-10 max-w-3xl mx-auto text-center"
       >
-        <h2 className="text-xl sm:text-2xl font-bold mb-4">Get in Touch</h2>
-        <p className="text-sm sm:text-base mb-6">
-          I&apos;m available for technical co-founder roles, full stack engineering, mobile app development or (fractional) CTO.
-          Interested in collaborating or discussing a project or role? Reach out!
-        </p>
-        <div className="flex justify-center mb-4 gap-4">
-          <Button asChild>
-            <a href="mailto:martijn.vanhalen@gmail.com">Contact Me</a>
-          </Button>
-          <Button asChild>
-            <a href="https://www.linkedin.com/in/mvanhalen">LinkedIn</a>
-          </Button>
-        </div>
+       
 
         <div className='text-center text-xs sm:text-sm mb-32 mt-8'>
           This portfolio is built with Next.js / React, TypeScript, Tailwind CSS + ShadCN, and Framer Motion. The chat is powered by OpenAI api and custom embeddings. It is hosted on Vercel. The code is open source and available on 

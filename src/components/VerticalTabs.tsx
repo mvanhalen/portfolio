@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { Currency, Cloud, CreditCard } from "lucide-react";
+import { Currency, Cloud, CreditCard, User } from "lucide-react";
 import Link from "next/link";
+
 
 interface Tab {
   id: string;
@@ -26,6 +27,7 @@ const tabs: Tab[] = [
     content: (
       <div className="mt-4">
         <h3 className="text-lg sm:text-xl font-semibold">NFTz INC</h3>
+        <p>Social NFT marketplaces on DeSo and Polygon</p>
         <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
           CTO, Full Stack Developer, Co-founder - Dec 2021 - Present
         </p>
@@ -53,6 +55,7 @@ const tabs: Tab[] = [
     content: (
       <div className="mt-4">
         <h3 className="text-lg sm:text-xl font-semibold">iGenApps INC</h3>
+        <p>Mobile app generator to create instant mobile apps</p>
         <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
           CTO, Full Stack Developer, Co-founder - Dec 2013 - Jan 2022
         </p>
@@ -78,6 +81,7 @@ const tabs: Tab[] = [
     content: (
       <div className="mt-4">
         <h3 className="text-lg sm:text-xl font-semibold">Payvision</h3>
+        <p>Payment processing solutions for e-commerce</p>
         <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
           CTO, Co-founder - Apr 2002 - Mar 2009
         </p>
@@ -92,6 +96,34 @@ const tabs: Tab[] = [
     ),
     buttonText: "ING Press Release",
     buttonLink: "https://www.ing.com/Newsroom/News/Press-releases/ING-completes-acquisition-of-majority-stake-in-Payvision.htm",
+    buttonLinkExtra:null,
+    buttonTextExtra: null,
+  },
+  {
+    id: "freelance",
+    label: "Freelance",
+    icon: <User className="w-5 h-5" />,
+    image: "/images/kystcentret.png", // Replace with your image path
+    content: (
+      <div className="mt-4">
+        <h3 className="text-lg sm:text-xl font-semibold">Freelance</h3>
+        <p>Web and mobile apps + crypto development services</p>
+        <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
+          Self employed - April 2010 - Present
+        </p>
+        <ul className="list-disc pl-5 mt-2 text-sm sm:text-base">
+          <li>Frame app on Lens + Solidity contract for Galverse (HK)</li>
+          <li>Risk hazard application (USA)</li>
+          <li>Payrolling portal We Pay People (NL)</li>
+          <li>Apps and CMS system for Kystcentret (DK)</li>
+          <li>Finance app for Inverse(NL)</li>
+          <li>Electric Taxi Booking app for E-Taxi (NL)</li>
+          <li>Windows apps for Blockchain.com (UK)</li>
+        </ul>
+      </div>
+    ),
+    buttonText: "",
+    buttonLink: "",
     buttonLinkExtra:null,
     buttonTextExtra: null,
   },
@@ -129,7 +161,7 @@ export default function Tabs() {
                
       </div>
       <div className="flex flex-col mt-4 gap-4">
-      {tabs.find((tab) => tab.id === activeTab)?.buttonLink &&<Button asChild >
+      {tabs.find((tab) => tab.id === activeTab)?.buttonLink && tabs.find((tab) => tab.id === activeTab)?.buttonLink!==""  &&<Button asChild >
         <Link target="_blank" href={tabs.find((tab) => tab.id === activeTab)!.buttonLink}> {tabs.find((tab) => tab.id === activeTab)?.buttonText}</Link>  
       </Button>}
       {tabs.find((tab) => tab.id === activeTab)?.buttonLinkExtra && <Button asChild> 
